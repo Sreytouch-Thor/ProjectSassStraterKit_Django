@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -139,31 +140,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-#Firebase 
-# GOOGLE_CLOUD_PROJECT="saas-starter-kit-pro-d853b"
-# FIREBASE_DATABASE_URL="https://saas-starter-kit-pro-d853b.firebaseio.com"
-# FIREBASE_PROJECT_ID="saas-starter-kit-pro-d853b"
-# FIREBASE_CLIENT_EMAIL="firebase-adminsdk-4q04x@saas-starter-kit-pro-d853b.iam.gserviceaccount.com"
-# FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQDdJeQP+Y7NXo+5\nQSpvsbo2aifgLQOzgOIi1BPoltwD0N7hXY2ky4fNuVXoYqCIhcqmV5UZd80oO5t2\nX9RIoiGj1yUzpX85Eh0l/FHGfOntNbArKzoHdtox0yq/sX8/4lzEVE/6p4+6Prt7\nGpHa8vkFgjnLYMONyktyeQC+ssXuswxA9Vy3shl+ANjKUOwGLtfgtm8HcWUJMKif\ny61usIZSomwLjtcrt0hvzMcuCobBqM5lZSpI8XonLKiUOMdkiykDNf/HjeuCcvT1\nhcr2901/XuIkUceWGpqacCWHOML3A9Hgcpd/ZJ7ZIVvrHOqsDPH1sqz1IwQjB6FR\n/o4qHZfXAgMBAAECggEANtEun/sXN7bp31zU3QzsAJL9wWbHFRasdz+kk7HZZaS/\nqpNbCe9dgVQghFL2QgEQA32QOtjkZMWpuoT0hPCTcB5jXVL3nzjrOsA5sP7DqYX2\nXiz/3FvMqC8U2KFxzm8Y2Z2gmZwxV1Q3esNSRjiWG5R1KQGaV6o+W2i9E4gS4iDP\nwO4aO4H5L5xxPtlQimGYYWh7o3h4NuGOMQ6lyLqtVm5b4s3dqEhIH9x2qCpnWpcD\nukdTKRqMNEv/pSZj4siCh0x4DcdYB99Mm9nUMpI7FFPYgB6HUpOce4pyCxEyR446\n4EgViJWPxmSrXrqidgZHfIzAgXaVqOmlNF4pMhXwWQKBgQDwLXQnKKzQbFmCm9MZ\nVqWitbtsS/EgYS1frycyhaPLuypbT5G0g22eleW6kgvQHkdxa/f+5hQQQuUmsr5Q\nzidJUdFyXf+PPdJCLEUR0/CmPjHKx2TQTesSa80cXc9a5cqgeXbsuSAOh8XU7xAi\ngB3RiZJ3oVX5NDgvGvgihCxbPQKBgQDrt4H6lHxU2OWN4k4dg0SE8Dfu3IeRxhmN\nAgbhQdOydV85g+hTngegza4m9reB6OLY7Xb67+zyZV8RSFW2oMjdygYOxYR/nIZH\ne5pTjMqmVPBQDC15ntgB2kgdWzigvUzicXKNuH5ENDp8KvanWgRAQfOoWL9s3YSr\nVwp+PVWAowKBgG5/+xipFhkuQGBe4NifjMU3Z2uD5QRIsV98bkRIR/vLuMkZ6qdq\ncFyuCmu0FctCowwD6K1VnZV9sYAEbJswvdJ12i8MIC/++WWIiJ6TK/zQUIhDBJbx\nwl1PS6bpYiUn4/nA6H4xDhahUNuOwZWd7BojeUeg6rUk2VSSy+bVeLLhAoGALREO\nxsvw4X/+k5v692WLiicran27ZcGMTQtgKV0ejnYmWKbBmosSRkpMy6JL/4h5JqRw\nJRYOJWIARRuhV6NyBAWGFvjolkVk3vHg1ayLajW/JG7PmvslrWUAeKxiLUlEE99A\n2Zu2eG/L5sWIFwL84RQ686rUHopTvTaNCQnM+SUCgYAk+3IM59yqFSh5EFdYRRI9\nVH4zBvsYZp/BsvrK8q0Olv0Fr/ty6aNtbWIX4sUAByEt46+YN33tGChot/n0dS/s\nQ9evDRZMxZmSaCnbmgroEsY+keb23XnQEmiLCOLh+vNqe+NsUR98gbABiWBDW4a1\nglAxqlaA6OoPXgOBSl2NxA==\n-----END PRIVATE KEY-----\n"
-
-
-
-#user set auth secret
-# AUTH_SECRET="Secret"
-
-# #Mailtrap credentials
-# MAIL_TRAP_USERNAME= "c83e97e5d6768a"
-# MAIL_TRAP_PASSWORD= "371f6561508627"
-
-# #Stripe Secret
-# #Stripe Secret and price for one time payment
-# STRIPE_SECRET="sk_test_51NmpgzIJD6PdyPKnZBkaJ3Hp8JCnKZlvIsFqFLOkLx3h5mv2TYmhBPiv9pxCzuAm8ErXrM28ym7TbxmL1jC6sFRs00YdmMU4oZ"
-# STRIPE_ITEM_PRICE=0
-# STRIPE_WEBHOOK_SECRET="we_1Nmu6wIJD6PdyPKndivZX38c"
-
-# #Send in blue , multiple listIds can be added
-# SendInBlue_API_KEY="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"
-# SendInBlue_User="Sreytouch Thor"
-# SendInBlue_Password="JpyGXhcftsQURSYF"
-# SendInBlue_ListId=2
+FIREBASE_CONFIG = os.path.join(BASE_DIR,'firebase-congfig.json')
