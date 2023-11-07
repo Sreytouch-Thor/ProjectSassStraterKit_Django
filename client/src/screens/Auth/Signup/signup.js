@@ -72,7 +72,7 @@ const Signup = () => {
       domainUrl,
       isInviteFlow,
       invite_key,
-      location
+      location      
     );
   };
 

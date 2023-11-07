@@ -38,9 +38,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'posts',
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
+    'posts',
 ]
 CORS_ALLOWER_ORIGINS =['http://localhost:3000/']
 CORS_ALLOWER_ALL_ORIGINS = True
@@ -135,9 +136,31 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    # Other settings...
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 FIREBASE_CONFIG = os.path.join(BASE_DIR,'firebase-congfig.json')
+
+#Mailtrap credentials
+MAIL_TRAP_USERNAME= "c83e97e5d6768a"
+MAIL_TRAP_PASSWORD= "371f6561508627"
+
+#Stripe Secret
+#Stripe Secret and price for one time payment
+STRIPE_SECRET="sk_test_51NmpgzIJD6PdyPKnZBkaJ3Hp8JCnKZlvIsFqFLOkLx3h5mv2TYmhBPiv9pxCzuAm8ErXrM28ym7TbxmL1jC6sFRs00YdmMU4oZ"
+STRIPE_ITEM_PRICE=0
+STRIPE_WEBHOOK_SECRET="we_1Nmu6wIJD6PdyPKndivZX38c"
+
+#Send in blue env vars, multiple listIds can be added
+SendInBlue_API_KEY="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"
+SendInBlue_User="Sreytouch Thor"
+SendInBlue_Password="JpyGXhcftsQURSYF"
+SendInBlue_ListId=2
