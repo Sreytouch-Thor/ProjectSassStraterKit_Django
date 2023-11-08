@@ -28,78 +28,59 @@ def getUsers(request):
     return JsonResponse(response_object)
 
 
+# accounts/views.py
 
-@csrf_exempt  # If you want to disable CSRF protection, you can use this decorator
-def create_user(request):
-    verify_key = request.POST.get('verify_key')
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from .serializers import UserSerializer
 
-    # Verify the user by verify_key (your implementation may vary)
-    try:
-        user = Users.objects.get(verify_key=verify_key)
-    except Users.DoesNotExist:
-        return JsonResponse({'error': 'User not found'}, status=400)
-
-    username = user.username
-    email = user.email
-
-    # Perform your tasks here, e.g., save to email marketing and send a welcome email
-
-    # Log in the user
-    user.backend = 'django.contrib.auth.backends.ModelBackend'  # Set authentication backend
-    login(request, user)
-
-    return JsonResponse({
-        'token': user.auth_token.key,  # Assuming you use Django Rest Framework for token authentication
-        'user_id': user.id,
-        'username': username,
-        'email': email
-    })
-
-@csrf_exempt
+@api_view(['POST'])
 def sign_up(request):
-    token = request.POST.get('token')
-    username = request.POST.get('username')
-    email = request.POST.get('email')
-    invite_key = request.POST.get('invite_key')
-    is_invite_flow = request.POST.get('is_invite_flow')
-    confirm_email_url = request.POST.get('confirm_email_url')
+    if request.method == 'POST':
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            print("me : ", serializer)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    # First, check if the user exists
-    user_exists = Users.objects.filter(email=email).exists()
+# @csrf_exempt
+# def sign_up(request):
+#     token = request.POST.get('token')
+#     username = request.POST.get('username')
+#     print(username)
+#     email = request.POST.get('email')
+#     invite_key = request.POST.get('invite_key')
+#     is_invite_flow = request.POST.get('is_invite_flow')
+#     confirm_email_url = request.POST.get('confirm_email_url')
 
-    if user_exists:
-        return JsonResponse({'error': 'User already exists'}, status=400)
+#     # First, check if the user exists
+#     user_exists = Users.objects.filter(email=email).exists()
 
-    # Decode the firebase token received from the frontend and save the firebase UUID
-    # Your implementation may vary, and you may need to use a library like python-firebase
-    # to interact with Firebase in Python.
+#     if user_exists:
+#         return JsonResponse({'error': 'User already exists'}, status=400)
 
-    # Generate random bytes for user email verification
-    # random_bytes = nanoid()
 
-    # Send the verification email
+#     return JsonResponse({'message': 'Email confirmation sent'})
 
-    # Save user firebase info to our own db, and get a unique user database id
+# @csrf_exempt
+# def login_user(request):
+#     token = request.POST.get('token')
+#     email = request.POST.get('email')
 
-    return JsonResponse({'message': 'Email confirmation sent'})
+#     # Perform token validation (your implementation may vary)
 
-@csrf_exempt
-def login_user(request):
-    token = request.POST.get('token')
-    email = request.POST.get('email')
+#     # Authenticate the user
+#     user = authenticate(request, email=email)
 
-    # Perform token validation (your implementation may vary)
+#     if user is not None:
+#         login(request, user)
+#         return JsonResponse({
+#             'token': user.auth_token.key, 
+#             'user_id': user.id
+#         })
 
-    # Authenticate the user
-    user = authenticate(request, email=email)
+#     return JsonResponse({'error': 'User does not exist'}, status=400)
 
-    if user is not None:
-        login(request, user)
-        return JsonResponse({
-            'token': user.auth_token.key, 
-            'user_id': user.id
-        })
-
-    return JsonResponse({'error': 'User does not exist'}, status=400)
-
-# Define similar views for updating username and email
+# # Define similar views for updating username and email

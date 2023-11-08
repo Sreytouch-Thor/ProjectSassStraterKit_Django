@@ -43,8 +43,10 @@ INSTALLED_APPS = [
     'corsheaders',
     'posts',
 ]
-CORS_ALLOWER_ORIGINS =['http://localhost:3000/']
-CORS_ALLOWER_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # Replace with the actual origin of your frontend app
+]
+CORS_ALLOWED_ALL_ORIGINS = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
