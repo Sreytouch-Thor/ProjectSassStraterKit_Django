@@ -1,17 +1,20 @@
-from django.shortcuts import render
+# from django.shortcuts import render
 from django.http import JsonResponse
 from django.core.serializers import serialize
 import firebase_admin
 from .models import Users
 from firebase_admin import credentials
-from firebase_admin import auth
+# from firebase_admin import auth
 from django.conf import settings
 # from .models import nanoid
 
-from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from .models import Users
+# from django.views.decorators.csrf import csrf_exempt
+
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from .serializers import UserSerializer
 # from .email import send_email  # Assuming you have an email sending function
 # Create your views here.
 
@@ -19,35 +22,37 @@ from .models import Users
 firebase_creds = credentials.Certificate(settings.FIREBASE_CONFIG)
 firebase_app = firebase_admin.initialize_app(firebase_creds)
 
+@api_view(['GET'])
 def getUsers(request):
     authorization_header =request.META.get('HTTP_AUTHORIZATION')
     print(authorization_header)
     users = Users.objects.all()
     response_object = {'data': serialize('json', users)}
     response_object['Access-Control-Allow-Origin'] = '*'
-    return JsonResponse(response_object)
+    return Response(response_object)
 
+def login(request):
+    user = Users.objects.all()
+    print(user)
 
-# accounts/views.py
-
-from rest_framework import status
-from rest_framework.response import Response
-from rest_framework.decorators import api_view
-from .serializers import UserSerializer
 
 @api_view(['POST'])
-def sign_up(request):
+def signup(request):
+    # return Response('token request : ')
+    serializer = UserSerializer(data=request.data)
+    print("Post data : ",request.data)
     if request.method == 'POST':
-        serializer = UserSerializer(data=request.data)
+        print(request.POST)  # Print the received POST data
+
         if serializer.is_valid():
-            print("me : ", serializer)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # @csrf_exempt
-# def sign_up(request):
+# def signup(request):
 #     token = request.POST.get('token')
+#     print(token)
 #     username = request.POST.get('username')
 #     print(username)
 #     email = request.POST.get('email')

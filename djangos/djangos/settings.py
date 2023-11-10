@@ -28,6 +28,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# settings.py
+APPEND_SLASH = False
 
 # Application definition
 
