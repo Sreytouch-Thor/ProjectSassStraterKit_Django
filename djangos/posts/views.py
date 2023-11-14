@@ -4,11 +4,8 @@ from django.core.serializers import serialize
 import firebase_admin
 from .models import Users
 from firebase_admin import credentials
-# from firebase_admin import auth
+from firebase_admin import auth
 from django.conf import settings
-# from .models import nanoid
-
-from django.http import JsonResponse
 # from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import status
@@ -19,32 +16,26 @@ from .serializers import UserSerializer
 # Create your views here.
 
 
-firebase_creds = credentials.Certificate(settings.FIREBASE_CONFIG)
-firebase_app = firebase_admin.initialize_app(firebase_creds)
+# firebase_creds = credentials.Certificate(settings.FIREBASE_CONFIG)
+# firebase_app = firebase_admin.initialize_app(firebase_creds)
 
-@api_view(['GET'])
-def getUsers(request):
-    authorization_header =request.META.get('HTTP_AUTHORIZATION')
-    print(authorization_header)
-    users = Users.objects.all()
-    response_object = {'data': serialize('json', users)}
-    response_object['Access-Control-Allow-Origin'] = '*'
-    return Response(response_object)
-
-def login(request):
-    user = Users.objects.all()
-    print(user)
-
+# @api_view(['GET'])
+# def signUp(request):
+    
+#     authorization_header =request.META.get('HTTP_AUTHORIZATION')
+#     print(authorization_header)
+#     users = Users.objects.all()
+#     response_object = {'data': serialize('json', users)}
+#     response_object['Access-Control-Allow-Origin'] = '*'
+#     return JsonResponse(response_object)
 
 @api_view(['POST'])
-def signup(request):
-    # return Response('token request : ')
-    serializer = UserSerializer(data=request.data)
-    print("Post data : ",request.data)
+def signUp(request):
     if request.method == 'POST':
-        print(request.POST)  # Print the received POST data
-
+        serializer = UserSerializer(data=request.data) 
+        print("Response data : ", request.data)
         if serializer.is_valid():
+            print(serialize.is_valid)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

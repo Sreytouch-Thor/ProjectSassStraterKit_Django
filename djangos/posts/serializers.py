@@ -6,15 +6,14 @@ class UserSerializer(serializers.ModelSerializer):
         model = Users
         fields = '__all__'
         extra_kwargs = {'password': {'write_only': True}}
-
+        
     def create(self, validated_data):
-        user = Users(
+        user = Users.objects.create(
             username=validated_data['username'],
             email=validated_data['email'],
-            firebase_user_id = validated_data['firebase_user_id'],
-            verify_key = validated_data['verify_key'],
-            is_email_verified = validated_data['is_email_verified'],
+            firebase_user_id=validated_data['firebase_user_id'],
+            verify_key=validated_data['verify_key'],
+            is_email_verified=validated_data['is_email_verified'],
+            password=validated_data['password'],
         )
-        user.set_password(validated_data['password'])
-        user.save()
         return user

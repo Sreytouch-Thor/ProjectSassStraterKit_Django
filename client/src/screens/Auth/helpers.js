@@ -98,10 +98,13 @@ export const SignupAuth = async (
   const confirmEmailUrl = `${domainUrl}/auth/confirmedemail`;
 
   let authData = { email, username, token, confirmEmailUrl, isInviteFlow, invite_key };
-
+  
   await axios.post(`/auth/signup`, authData).catch((err) => {
+    console.log(authData)
     fetchFailure(err);
   });
+
+
 
   router.push('/auth/emailconfirm');
 };
