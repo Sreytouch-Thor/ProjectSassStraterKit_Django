@@ -29,14 +29,14 @@ export const CreateUser = async (req, res) => {
 
   //send welcome email
   let template = 'welcome';
-  let locals = { FIRSTNAME };
+  let locals = { FIRSTNAME }; 
   await sendEmail(email, template, locals);
 
   res.send({ token: setToken(user_id), user_id, username, email });
 };
 
 export const SignUp = async (req, res) => {
-  let token = req.body.token;
+  let token = req.body.token; 
   let username = req.body.username;
   let email = req.body.email;
   let invite_key = req.body.invite_key;

@@ -5,15 +5,19 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
         fields = '__all__'
-        extra_kwargs = {'password': {'write_only': True}}
+        extra_kwargs = {
+            'password': {'write_only': True},
+            # 'firebase_user_id': {'required': False},
+            'verify_key': {'required': False},         
+            }
         
     def create(self, validated_data):
-        user = Users.objects.create(
+        user = Users(
             username=validated_data['username'],
             email=validated_data['email'],
             firebase_user_id=validated_data['firebase_user_id'],
-            verify_key=validated_data['verify_key'],
-            is_email_verified=validated_data['is_email_verified'],
-            password=validated_data['password'],
+            # verify_key=validated_data['verify_key'],
+            
         )
+        user.save()
         return user
