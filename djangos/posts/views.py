@@ -8,13 +8,13 @@ from firebase_admin import auth
 from django.conf import settings
 # from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login ,logout
-from django.contrib.auth.models import User
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .serializers import UserSerializer
-from rest_framework.authtoken.models import Token
+from .utils import generate_random_bytes ,get_user, set_token
 import jwt
+
 # from .email import send_email  # Assuming you have an email sending function
 # Create your views here.
 
@@ -41,15 +41,21 @@ def signUp(request):
             try:             
                 decoded_token = auth.verify_id_token(token)
                 firebase_user_id =decoded_token['user_id']
+                 # Generate random bytes for user email verify
+                random_bytes = generate_random_bytes(20)
+                confirm_email_url = f"{"http://localhost:3000/auth/confirmedemail"}/?key={random_bytes}"
+
                 # Create a new user instance with firebase_user_id
                 user_data = {
                     'username': request.data.get('username'),
                     'email': request.data.get('email'),
                     'firebase_user_id': firebase_user_id,
+                    'verify_key': random_bytes,
+                    # 'is_email_verified' : confirm_email_url,
                 }
                 serializer = UserSerializer(data=user_data)
                 print(serializer)
-                print(serializer.is_valid())
+
                 if serializer.is_valid():
                     # Save the user to the database
                     serializer.save()
@@ -58,6 +64,7 @@ def signUp(request):
                     # Print or log the errors for debugging
                     print(serializer.errors)
                     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                
             except jwt.ExpiredSignatureError:
                 return JsonResponse({'error': 'Token has expired'}, status=400)
             except jwt.InvalidTokenError:
@@ -66,52 +73,62 @@ def signUp(request):
 
 
 
-# @api_view(['POST'])
-# def signUp(request):
-#     if request.method == 'POST':
-#         # token = request.data.get('token')
-#         token = request.GET.get('token')
+@api_view(['POST'])
+def login(request):
+    if request.method == 'POST':
+        token = request.data.get('token')
+        email = request.data.get('email')
+        # print("token : ", token)
+        # print("email: ", email)
+        # if token:
+        try:
+            # Decode the Firebase token received from the frontend
+            decoded_token = auth.verify_id_token(token)
+            firebase_user_id = decoded_token['user_id']
+            # print("Decoded Token:", decoded_token)
 
-#     if not token:
-#         return JsonResponse({'error': 'Token is required'}, status=400)
+            # user_id = get_user(email).id
+            # print("firebase_user_id :" , firebase_user_id)
+            # print("user_id :" , user_id)
+            # return Response({'token': set_token(user_id)})
+        # except Exception as e:
+        #     return Response({'error': str(e)}, status=500)          
+        except auth.AuthError as e:
+            return Response({'type': 'Failed Login', 'message': f'Firebase Authentication Error: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Check if the user exists in your Django database
+        try:
+            user_profile = Users.objects.get(email=email)
+            print('user_profile : ', user_profile)
+        except Users.DoesNotExist:
+            # If the user is not found, you might choose to return an error
+            return Response({'type': 'Failed Login', 'message': 'User Does Not Exist'}, status=status.HTTP_400_BAD_REQUEST)
 
-#     try:
-#         decoded_token = jwt.decode(token, 'your-secret-key', algorithms=['HS256'])
-#         # Assuming 'your-secret-key' is the same key used to encode the token
+        # Verify if the Firebase user ID matches the stored user ID
+        if user_profile:
+            print(f"Firebase User ID: {firebase_user_id}, User Profile ID: {user_profile.id}")
+            return Response({'type': 'Failed Login', 'message': 'Invalid Firebase User ID'}, status=status.HTTP_400_BAD_REQUEST)
 
-#         # Extract user information from the decoded token
-#         username = decoded_token.get('username')
-#         email = decoded_token.get('email')
-#         firebase_user_id = decoded_token.get('user_id')
-#         password = decoded_token.get('password')
-#         user = authenticate(request, username= username, email= email, password = password, firebase_user_id= firebase_user_id)
-#         serializer = UserSerializer(data=request.data) 
- 
-#         if serializer.is_valid():
-#             username= username
-#             email=email
-#             firebase_user_id
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Generate a token or return any other relevant information
+        # For simplicity, let's assume you have a function set_token.
+        token = set_token(user_profile.id)
+        print('token set : ', token)
+        serialized_user_profile = UserSerializer(user_profile).data
+        print('serialized_user_profile  : ', serialized_user_profile)
 
+        return Response({'token': token, 'user_profile': serialized_user_profile}, status=status.HTTP_200_OK)
 
-# @csrf_exempt
-# def login_user(request):
-#     token = request.POST.get('token')
-#     email = request.POST.get('email')
+            # if user is not None:
+            #     login(request, user)
+            #     return JsonResponse({
+            #         'token': user.auth_token.key, 
+            #         'user_id': user.id
+            #     })
 
-#     # Perform token validation (your implementation may vary)
-
-#     # Authenticate the user
-#     user = authenticate(request, email=email)
-
-#     if user is not None:
-#         login(request, user)
-#         return JsonResponse({
-#             'token': user.auth_token.key, 
-#             'user_id': user.id
-#         })
-
-#     return JsonResponse({'error': 'User does not exist'}, status=400)
-
+            # return JsonResponse({'error': 'User does not exist'}, status=400)
+        # except jwt.ExpiredSignatureError:
+        #     return JsonResponse({'error': 'Token has expired'}, status=400)
+        # except jwt.InvalidTokenError:
+        #     return JsonResponse({'error': 'Invalid token'}, status=400)
+    # return JsonResponse({'error': 'do not have token '}, status=400)
 # # Define similar views for updating username and email

@@ -8,7 +8,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True},
             # 'firebase_user_id': {'required': False},
-            'verify_key': {'required': False},         
+            # 'verify_key': {'required': False},         
             }
         
     def create(self, validated_data):
@@ -16,7 +16,8 @@ class UserSerializer(serializers.ModelSerializer):
             username=validated_data['username'],
             email=validated_data['email'],
             firebase_user_id=validated_data['firebase_user_id'],
-            # verify_key=validated_data['verify_key'],
+            verify_key=validated_data.get('verify_key',''),
+            # is_email_verified=validated_data.get('is_email_verified')
             
         )
         user.save()

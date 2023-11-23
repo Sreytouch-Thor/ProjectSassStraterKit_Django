@@ -28,6 +28,7 @@ export const LoginAuth = async (
   });
 
   let validToken = isValidToken(authServerRes.data.token, fetchFailure);
+  console.log(validToken)
 
   let id = validToken.user;
   let username = authRes.user.displayName;

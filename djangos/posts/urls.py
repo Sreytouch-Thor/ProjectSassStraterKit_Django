@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path('signup', views.signUp),
+    path('login', views.login),
     # path('signup/', views.signup),
     # path('signup', RedirectView.as_view(url='/auth/signup/')), 
     # path('login/', views.login),
