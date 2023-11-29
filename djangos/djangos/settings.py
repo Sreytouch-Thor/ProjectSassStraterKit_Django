@@ -159,14 +159,13 @@ FIREBASE_CONFIG = os.path.join(BASE_DIR,'firebase-congfig.json')
 MAIL_TRAP_USERNAME= "c83e97e5d6768a"
 MAIL_TRAP_PASSWORD= "371f6561508627"
 
-#Stripe Secret
-#Stripe Secret and price for one time payment
-STRIPE_SECRET="sk_test_51NmpgzIJD6PdyPKnZBkaJ3Hp8JCnKZlvIsFqFLOkLx3h5mv2TYmhBPiv9pxCzuAm8ErXrM28ym7TbxmL1jC6sFRs00YdmMU4oZ"
-STRIPE_ITEM_PRICE=0
-STRIPE_WEBHOOK_SECRET="we_1Nmu6wIJD6PdyPKndivZX38c"
+#user set auth secret
+AUTH_SECRET="Secret"
+# Your Stripe secret key
+STRIPE_SECRET = "sk_test_51NmpgzIJD6PdyPKnZBkaJ3Hp8JCnKZlvIsFqFLOkLx3h5mv2TYmhBPiv9pxCzuAm8ErXrM28ym7TbxmL1jC6sFRs00YdmMU4oZ"
 
-#Send in blue env vars, multiple listIds can be added
-SendInBlue_API_KEY="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"
-SendInBlue_User="Sreytouch Thor"
-SendInBlue_Password="JpyGXhcftsQURSYF"
-SendInBlue_ListId=2
+# Your default price for Stripe items
+STRIPE_ITEM_PRICE = 0
+
+# Your Stripe webhook secret
+STRIPE_WEBHOOK_SECRET = "we_1Nmu6wIJD6PdyPKndivZX38c"

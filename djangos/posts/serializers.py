@@ -1,7 +1,9 @@
 from rest_framework import serializers
 from .models import *
+import uuid
 
 class UserSerializer(serializers.ModelSerializer):
+    user_profile_id = serializers.SerializerMethodField()
     class Meta:
         model = Users
         fields = '__all__'
@@ -22,3 +24,23 @@ class UserSerializer(serializers.ModelSerializer):
         )
         user.save()
         return user
+    
+    def get_user_profile_id(self, obj):
+        return str(obj.id)
+    
+
+class OrganizationsSerializer(serializers.ModelSerializer):
+    primary_email = UserSerializer()
+
+    class Meta:
+        model = Organizations
+        fields = '__all__'
+
+
+class RolesSerializer(serializers.ModelSerializer):
+    org_id = OrganizationsSerializer()
+    user_id = UserSerializer()
+
+    class Meta:
+        model = Roles
+        fields = '__all__' 

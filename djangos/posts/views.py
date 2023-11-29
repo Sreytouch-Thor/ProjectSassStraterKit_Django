@@ -2,7 +2,7 @@
 from django.http import JsonResponse
 from django.core.serializers import serialize
 import firebase_admin
-from .models import Users
+from .models import *
 from firebase_admin import credentials
 from firebase_admin import auth
 from django.conf import settings
@@ -11,8 +11,8 @@ from django.contrib.auth import authenticate, login ,logout
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .serializers import UserSerializer
-from .utils import generate_random_bytes ,get_user, set_token
+from .serializers import UserSerializer,OrganizationsSerializer, RolesSerializer
+from .utils import generate_random_bytes , set_token, create_org_model, create_stripe_customer, set_org_stripe_id, create_org_role, get_org_model
 import jwt
 
 # from .email import send_email  # Assuming you have an email sending function
@@ -21,17 +21,6 @@ import jwt
 
 firebase_creds = credentials.Certificate(settings.FIREBASE_CONFIG)
 firebase_app = firebase_admin.initialize_app(firebase_creds)
-
-# @api_view(['GET'])
-# def signUp(request):
-    
-#     authorization_header =request.META.get('HTTP_AUTHORIZATION')
-#     print(authorization_header)
-#     users = Users.objects.all()
-#     response_object = {'data': serialize('json', users)}
-#     response_object['Access-Control-Allow-Origin'] = '*'
-#     return JsonResponse(response_object)
-
 
 @api_view(['POST'])
 def signUp(request):
@@ -78,21 +67,12 @@ def login(request):
     if request.method == 'POST':
         token = request.data.get('token')
         email = request.data.get('email')
-        # print("token : ", token)
-        # print("email: ", email)
-        # if token:
         try:
             # Decode the Firebase token received from the frontend
             decoded_token = auth.verify_id_token(token)
             firebase_user_id = decoded_token['user_id']
             # print("Decoded Token:", decoded_token)
-
-            # user_id = get_user(email).id
-            # print("firebase_user_id :" , firebase_user_id)
-            # print("user_id :" , user_id)
-            # return Response({'token': set_token(user_id)})
-        # except Exception as e:
-        #     return Response({'error': str(e)}, status=500)          
+       
         except auth.AuthError as e:
             return Response({'type': 'Failed Login', 'message': f'Firebase Authentication Error: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -105,30 +85,69 @@ def login(request):
             return Response({'type': 'Failed Login', 'message': 'User Does Not Exist'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Verify if the Firebase user ID matches the stored user ID
-        if user_profile:
-            print(f"Firebase User ID: {firebase_user_id}, User Profile ID: {user_profile.id}")
+        if not user_profile:
+            print("Firebase User ID: {firebase_user_id}, User Profile ID: {user_profile.id}")
             return Response({'type': 'Failed Login', 'message': 'Invalid Firebase User ID'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Generate a token or return any other relevant information
+        # Convert UUID to string before including it in the response
+        user_profile_id_str = str(user_profile.id)
+        print('user_profile_id_str  : ', user_profile_id_str)
+
         # For simplicity, let's assume you have a function set_token.
         token = set_token(user_profile.id)
         print('token set : ', token)
         serialized_user_profile = UserSerializer(user_profile).data
         print('serialized_user_profile  : ', serialized_user_profile)
 
-        return Response({'token': token, 'user_profile': serialized_user_profile}, status=status.HTTP_200_OK)
+        return Response({'token': token, 'user_profile': serialized_user_profile, 'user_profile_id': user_profile_id_str}, status=status.HTTP_200_OK)
 
-            # if user is not None:
-            #     login(request, user)
-            #     return JsonResponse({
-            #         'token': user.auth_token.key, 
-            #         'user_id': user.id
-            #     })
 
-            # return JsonResponse({'error': 'User does not exist'}, status=400)
-        # except jwt.ExpiredSignatureError:
-        #     return JsonResponse({'error': 'Token has expired'}, status=400)
-        # except jwt.InvalidTokenError:
-        #     return JsonResponse({'error': 'Invalid token'}, status=400)
-    # return JsonResponse({'error': 'do not have token '}, status=400)
-# # Define similar views for updating username and email
+@api_view(['POST'])
+def CreateOrg(request):
+    if request.method == 'POST':
+        primary_email = request.data.get('email')
+        org_name = request.data.get('org_name')
+        user_id = request.data.get('user_id')
+        role = request.data.get('role')
+
+        try:
+            # Retrieve the user instance
+            user_instance = Users.objects.get(email=primary_email)
+            user_profile_id_str = str(user_instance.id)
+
+            # Create the organization and other related entities
+            org_id = create_org_model(primary_email, org_name)
+            stripe_id = create_stripe_customer(primary_email, user_instance.id, org_id)
+            set_org_stripe_id(stripe_id.id, org_id)
+
+            # Create the role using the user instance
+            create_org_role(org_id, user_profile_id_str, role)
+
+            return Response({'message': 'Org Created'}, status=200)
+
+        except Users.DoesNotExist:
+            return Response({'error': 'User does not exist'}, status=400)
+
+    else:
+        return Response({'error': 'Invalid request method'}, status=400)
+
+@api_view(['GET'])
+def get_orgs(request):
+    user_id = request.query_params.get('user_id')
+    print('userid: ',user_id)
+
+    try:
+        result = get_org_model(user_id.id)
+        return Response(result, status=200)
+    except Exception as e:
+        return Response({'error': f'Error retrieving organizations: {e}'}, status=500)
+
+# @api_view(['POST'])
+# def create_role(request):
+#     if request.method == 'POST':
+#         serializer = RolesSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

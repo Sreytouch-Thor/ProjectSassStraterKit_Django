@@ -3,8 +3,10 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('signup', views.signUp),
-    path('login', views.login),
+    path('auth/signup', views.signUp),
+    path('auth/login', views.login),
+    path('api/org', views.CreateOrg),
+    path('api/org', views.get_orgs),
     # path('signup/', views.signup),
     # path('signup', RedirectView.as_view(url='/auth/signup/')), 
     # path('login/', views.login),
